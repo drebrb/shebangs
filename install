@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+# Nuke SH#BANGS! 2021
+# https://github.com/nuke-git/shebangs.git
+# Install
+
+
+User=$(whoami)
+
+
+install() { 
+    cp scripts/n* /usr/local/bin && echo "Installation complete!" || echo "Installation failed!"
+}
+
+
+if [ "$User" = "root" ]
+then
+    install
+else
+    echo "Run with sudo."
+fi

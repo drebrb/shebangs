@@ -1,0 +1,181 @@
+#!/bin/env bash
+
+
+# Nuke SH#BANGS! 2021
+# https://github.com/nuke-git/shebangs.git
+# nzip
+
+
+help="For help, type: nupdater -h"
+
+
+usage() {
+    cat <<'END'
+
+
+███╗   ██╗██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗██████╗ 
+████╗  ██║██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██╔══██╗
+██╔██╗ ██║██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗  ██████╔╝
+██║╚██╗██║██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝  ██╔══██╗
+██║ ╚████║╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗██║  ██║
+╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+                                                                    
+
+Usage: sudo nupdater [OPTION]
+
+
+nupdater automates various Linux system maintenance tasks by performing the 
+following commands.
+
+COMMANDS:
+    
+    apt-get update - Retrieve new lists of packages
+    apt-get upgrade - Perform an upgrade
+    apt-get autoremove - Remove automatically all unused packages
+    apt-get autoclean - Erase old downloaded archive files
+    reboot - reboots the machine
+
+See apt-get(8) for more information on the commands used in this script.
+
+
+OPTIONS:
+
+    -h, help
+    -u, unattended, Runs nupdater in unattended mode. Automatic yes to all prompts
+                    with no reboot.
+
+
+report bugs to https://github.com/nuke-git/shebangs.git 
+END
+}
+
+
+user=$(whoami)
+
+date=$(date +'%m-%d-%Y')
+
+time=$(date +'%H:%M')
+
+log_file="/var/log/nupdater.$date.log"
+
+red='\033[0;31m'
+
+green='\033[0;32m'
+
+nc='\033[0m'
+
+
+error() {
+    printf '%s\n' "$@" >&2
+    exit 1
+}
+
+
+error_color() {
+    printf "${red}"'%s'"${nc}"'\n' "$@" >&2
+    exit 1
+}
+
+
+exit_code() {
+    if [ "$ec" -ne 0 ]
+    then
+        error_color "Error: Failed to $prev_cmd!"
+    fi
+}
+
+
+net_check() {
+    printf '%s' "Testing your connection to the internet... "
+    ping -q -c 4 www.google.com > /dev/null 2>&1; ec=$?
+    if [ "$ec" -eq 0 ]
+    then
+        printf "${green}"'%s'"${nc}"'\n' "CONNECTED"
+    else
+        error_color "NOT CONNECTED"
+    fi
+}
+
+
+default() {
+    net_check; prev_cmd="Update"; printf "${green}"'%s'"${nc}"'\n' "Updating...";
+    apt-get update; ec=$?; exit_code
+    prev_cmd="Upgrade"; printf "${green}"'%s'"${nc}"'\n' "Upgrading...";
+    apt-get upgrade; ec=$?; exit_code
+    prev_cmd="Remove unused packages"; printf "${green}"'%s'"${nc}"'\n' "Removing unused packages...";
+    apt-get autoremove; ec=$?; exit_code
+    prev_cmd="Clean the machine"; printf "${green}"'%s'"${nc}"'\n' "Cleaning up...";
+    apt-get autoclean; ec=$? exit_code
+    printf "${green}"'%s'"${nc}"'\n' "nupdater completed successfully with $? errors."
+    if [ -f /var/run/reboot-required ]
+    then
+        printf '%s' "*** System Restart Required ***"
+        while true
+        do
+            printf '%s' " Restart now? [Y/n] "
+            read -r input
+            case $input in
+                y|Y|[yY][eE][sS])
+                    break
+                    ;;
+                *) printf '%s\n' "Abort."
+                    error "Log file saved to $log_file"
+            esac
+        done
+        printf '%s\n' "Saving log file to $log_file"
+        sleep 3
+        printf "${green}"'%s'"${nc}"'\n' "Rebooting..."
+        sleep 2
+        reboot
+    else
+        exit 0
+    fi
+}
+
+
+unattended() {
+    net_check; prev_cmd="Update"; printf "${green}"'%s'"${nc}"'\n' "Updating...";
+    apt-get -y update; ec=$?; exit_code
+    prev_cmd="Upgrade"; printf "${green}"'%s'"${nc}"'\n' "Upgrading...";
+    apt-get -y upgrade; ec=$?; exit_code
+    prev_cmd="Remove unused packages"; printf "${green}"'%s'"${nc}"'\n' "Removing unused packages...";
+    apt-get -y autoremove; ec=$?; exit_code
+    prev_cmd="Clean the machine"; printf "${green}"'%s'"${nc}"'\n' "Cleaning up...";
+    apt-get -y autoclean; ec=$?; exit_code
+    printf "${green}"'%s'"${nc}"'\n' "nupdater completed successfully with $? errors."
+    if [ -f /var/run/reboot-required ]; then printf '%s\n' "*** System Restart Required ***"; fi
+    exit 0
+}
+
+
+start_up() {
+    printf '%s\n' "nupdater started at $time on $date"
+}
+
+
+root_check() {
+    if [ "$user" != "root" ]
+    then
+        error "$help"
+    fi
+}
+
+
+if [ $# -eq 0 ]
+then
+    root_check; exec &> >(tee "$log_file"); start_up; default
+else
+    if [ $# -eq 1 ]
+    then
+        case $1 in
+            -h) usage; exit 0 ;;
+            -u) root_check; exec &> >(tee "$log_file"); start_up; unattended ;;
+            -*) error "$1 is not a valid option" ;;
+            *) error "$help"
+        esac
+    else
+        error "$help"
+    fi
+fi
+
+
