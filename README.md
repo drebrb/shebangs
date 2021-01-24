@@ -1,7 +1,7 @@
 <h1 align="center">SH#BANGS!</h1>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/nuke-git/shebangs/master/shebangs.png"></img>
+  <img src="https://raw.githubusercontent.com/drebrb/shebangs/master/shebangs.png"></img>
 </p>
 
 <p>
@@ -33,7 +33,7 @@
 `sudo nupdater`
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/nuke-git/shebangs/master/nupdater.gif"><img>
+  <img src="https://raw.githubusercontent.com/drebrb/shebangs/master/nupdater.gif"><img>
 </p>
 
 <hr>
@@ -43,7 +43,7 @@
 `nzip [file]`
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/nuke-git/shebangs/master/nzip.gif"><img>
+  <img src="https://raw.githubusercontent.com/drebrb/shebangs/master/nzip.gif"><img>
 </p>
 
 <hr>
