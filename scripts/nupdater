@@ -109,10 +109,10 @@ default() {
     printf "${green}"'%s'"${nc}"'\n' "nupdater completed successfully with $? errors."
     if [ -f /var/run/reboot-required ]
     then
-        printf '%s' "*** System Restart Required ***"
+        printf '%s\n' "*** System Restart Required ***"
         while true
         do
-            printf '%s' " Restart now? [Y/n] "
+            printf '%s' "Restart now? [Y/n] "
             read -r input
             case $input in
                 y|Y|[yY][eE][sS])
