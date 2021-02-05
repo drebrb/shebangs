@@ -70,7 +70,14 @@ destinationcheck() {
     then
         return 0
     else
-        error "DESTINATION $3 does not exist."
+        printf '%s\n' "DESTINATION $3 does not exist."
+        printf '%s' "Do you want to create it? [Y/n] "
+        read -r input
+        case $input in
+            y|Y|[yY][eE][sS]) mkdir $3
+                ;;
+            *) error "$3 was not created. nzip will abort."
+        esac
     fi
 }
 
