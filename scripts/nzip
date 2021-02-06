@@ -1,9 +1,7 @@
 #!/bin/sh
 
 
-# Nuke SH#BANGS! 2021
-# https://github.com/nuke-git/shebangs.git
-# nzip
+# https://github.com/drebrb/shebangs
 
 
 help="For help, type: nzip -h"
@@ -30,7 +28,7 @@ OPTIONS:
     -h, help
 
 
-report bugs to https://github.com/nuke-git/shebangs.git
+report bugs to https://github.com/drebrb/shebangs
 END
 }
 

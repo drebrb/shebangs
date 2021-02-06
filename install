@@ -1,18 +1,12 @@
 #!/bin/bash
 
-
-# Nuke SH#BANGS! 2021
-# https://github.com/nuke-git/shebangs.git
-# Install
-
+# https://github.com/drebrb/shebangs
 
 User=$(whoami)
-
 
 install() { 
     cp scripts/n* /usr/local/bin && echo "Installation complete!" || echo "Installation failed!"
 }
-
 
 if [ "$User" = "root" ]
 then
